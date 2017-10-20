@@ -15,7 +15,7 @@ class MyHandler(BaseHTTPRequestHandler):
 
 def run(server_class=HTTPServer, handler_class=MyHandler):
     port = int(os.environ.get("PORT", 8000))
-    server_address = ('localhost', port)
+    server_address = ('0.0.0.0', port)
     httpd = server_class(server_address, handler_class)
     try:
         print("Server running on port "+str(port))
