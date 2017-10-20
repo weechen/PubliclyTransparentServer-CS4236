@@ -14,20 +14,14 @@ class MyHandler(BaseHTTPRequestHandler):
 
 
 def run(server_class=HTTPServer, handler_class=MyHandler):
-    # ON_HEROKU = os.environ.get('ON_HEROKU')
-    # if ON_HEROKU:
-    #     # get the heroku port 
-    #     port = int(os.environ.get("PORT", 17995))  # as per OP comments default is 17995
-    # else:
-    #     port = 3000
-
-    server_address = ('localhost', 8000)
+    port = int(os.environ.get("PORT", 8000))
+    server_address = ('localhost', port)
     httpd = server_class(server_address, handler_class)
     try:
-        print("Server works on http://localhost:8000")
+        print("Server running on port "+str(port))
         httpd.serve_forever()
     except KeyboardInterrupt:
-        print("Stop the server on http://localhost:8000")
+        print("Stop the server on port "+str(port))
         httpd.socket.close()
 
 
