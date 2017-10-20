@@ -1,5 +1,5 @@
 {
-  "name": "Publicly Transparent Server",
+  "name": "ptc",
   "version": "0.0.1",
   "description": "",
   "engines": {
@@ -12,7 +12,9 @@
   },
   "dependencies": {
     "ejs": "2.5.6",
-    "express": "4.15.2"
+    "express": "4.15.2",
+    "lodash": "^4.17.4",
+    "socket.io": "^2.0.3"
   },
   "devDependencies": {
     "request": "^2.81.0",
