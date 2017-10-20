@@ -11,6 +11,8 @@
     "test": "node test.js"
   },
   "dependencies": {
+    "ejs": "2.5.6",
+    "express": "4.15.2"
   },
   "devDependencies": {
     "request": "^2.81.0",
@@ -22,7 +24,8 @@
   },
   "keywords": [
     "node",
-    "heroku"
+    "heroku",
+    "express"
   ],
   "license": "MIT"
 }
