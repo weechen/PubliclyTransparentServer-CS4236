@@ -18,14 +18,20 @@ const io = socketio.listen(server);
 io.on('connection', (socket) => {
   console.log(`${socket.id} connected`);
 
-  // socket.emit('register', { bet: 5 });
-  socket.on('register', ({ bet }) => {
-  	if (bet && _.isSafeInteger(bet) && bet > 0) {
-    	console.log(`${socket.id} has been registered and placed bet of ${bet}`);
-      socket.join(game);
-      transactions[socket.id] = {};
+  // socket.emit('register', { username: alice });
+  socket.on('register', ({ username }) => {
+  	console.log(`${socket.id} has been registered as ${username}`);
+    socket.join(game);
+    transactions[socket.id] = {};
+    transactions[socket.id].username = username
+  });
+
+  // socket.emit('bet', { bet: 10 });
+  socket.on('bet', ({ bet }) => {
+    if (bet && _.isSafeInteger(bet) && bet > 0) {
+      console.log(`${transactions[socket.id].username} has placed bet of ${bet}`);
       balance += bet;
-  	}
+    }
   });
 
   // socket.emit('commit', { commit: 10 });
@@ -33,7 +39,7 @@ io.on('connection', (socket) => {
   	if (!transactions[socket.id]) {
   		return console.warn(`${socket.id} does not exist in transactions`);
   	}
-  	console.log(`${socket.id} has submitted commit ${commit}`);
+  	console.log(`${transactions[socket.id].username} has submitted commit ${commit}`);
   	// check that commit is valid data type
   	transactions[socket.id].commit = commit;
   });
@@ -43,7 +49,7 @@ io.on('connection', (socket) => {
 		if (!transactions[socket.id]) {
   		return console.warn(`${socket.id} does not exist in transactions`);
   	}
-  	console.log(`${socket.id} has submitted guess ${guess}`);
+  	console.log(`${transactions[socket.id].username} has submitted guess ${guess}`);
   	// check that guess is valid data type
   	transactions[socket.id].guess = guess;
   	revealSecret();
