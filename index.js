@@ -57,9 +57,9 @@ function revealSecret(){
 	let secret = 0;
 	_.forEach(transactions, (transaction, id) => {
 		let { guess, commit } = transaction;
-		if (guess) {
+		if (typeof (guess) !== 'undefined') {
       secret += transaction.guess % transactionsSize;
-      if (sha3(transaction.guess) === transaction.commit) {
+      if (sha3(transaction.guess) === sha3(transaction.commit)) {
       	transaction.playerId = id;
         validTransactions.push(transaction);
 			}
