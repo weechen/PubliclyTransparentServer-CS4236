@@ -1,9 +1,55 @@
 <!DOCTYPE html>
 <html>
   <head>
+  	<link href="https://afeld.github.io/emoji-css/emoji.css" rel="stylesheet">
+  	<link rel="stylesheet" type="text/css" href="stylesheets/main.css">
+  	<link rel="stylesheet" type="text/css" href="stylesheets/standardized-spacing.css">
+  	<link href="https://afeld.github.io/emoji-css/emoji.css" rel="stylesheet">
+
+  	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+  	<script src="/socket.io/socket.io.js"></script>
   </head>
 
   <body>
-    Hello World
+  	<div class="main-container">
+	  	<audio controls id="audios" preload="auto" class="hidden">
+			<source src="music/smw_coin.mp3" controls></source>
+		</audio>
+
+  		<div class="header blink-animation col-xs-12">
+  		 	<i class="em em-slot_machine margin-top-s"></i>
+  			<h2 class="margin-left-m margin-right-m">BET ONLY !</h2>
+  			<i class="em em-slot_machine margin-top-s"></i>
+  		</div>
+
+  		<div class="content-container">
+  			<button class="begin-btn">BEGIN</button>
+
+			<div class="register-component hidden">
+  				<input id="username-input" type="text" class="margin-bottom-m"/>
+  				<button class="register-btn">REGISTER</button>
+  			</div>
+  		</div>
+
+  		<div class="footer-container">
+  			<div class="players hidden">
+  				<p>You are playing with:</p>
+  			</div>
+  		</div>
+  	</div>
+    
+    <script src="js/index.js"></script>
+	<script>		
+		$(function () {
+        	PTSController.init({
+        		serverAddr: "<%= serverInfo.serverAddr %>",
+        		serverPort: "<%= serverInfo.serverPort %>"
+        	});
+        });
+	  	// socket.on('news', function (data) {
+		  //   console.log(data);
+		  //   socket.emit('my other event', { my: 'data' });
+	  	// });
+	</script>
   </body>
 </html>

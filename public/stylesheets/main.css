@@ -1,0 +1,93 @@
+@import url("https://fonts.googleapis.com/css?family=Press+Start+2P");
+.blink-animation {
+  -webkit-animation-name: blinker;
+  -webkit-animation-duration: 1.5s;
+  -webkit-animation-timing-function: linear;
+  -webkit-animation-iteration-count: infinite;
+  -moz-animation-name: blinker;
+  -moz-animation-duration: 1.5s;
+  -moz-animation-timing-function: linear;
+  -moz-animation-iteration-count: infinite;
+  animation-name: blinker;
+  animation-duration: 1.5s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite; }
+
+@-moz-keyframes blinker {
+  0% {
+    opacity: 1.0; }
+  50% {
+    opacity: 0.0; }
+  100% {
+    opacity: 1.0; } }
+@-webkit-keyframes blinker {
+  0% {
+    opacity: 1.0; }
+  50% {
+    opacity: 0.0; }
+  100% {
+    opacity: 1.0; } }
+@keyframes blinker {
+  0% {
+    opacity: 1.0; }
+  50% {
+    opacity: 0.0; }
+  100% {
+    opacity: 1.0; } }
+.hidden {
+  display: none !important; }
+
+html {
+  height: 100%; }
+
+body {
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9); }
+  body .main-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center; }
+    body .main-container button {
+      outline: none;
+      padding: 20px 30px;
+      font-family: 'Press Start 2P', cursive;
+      font-size: 20px;
+      color: white;
+      border: 2px solid white;
+      background: transparent; }
+      body .main-container button:hover {
+        color: black;
+        background: white;
+        cursor: pointer; }
+    body .main-container input {
+      width: 300px;
+      padding: 20px 10px;
+      font-size: 20px;
+      border: 2px solid white;
+      background: transparent;
+      color: white;
+      font-family: 'Press Start 2P', cursive;
+      outline: none; }
+    body .main-container .header {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center; }
+      body .main-container .header h2 {
+        font-family: 'Press Start 2P', cursive;
+        font-size: 50px;
+        color: white;
+        text-shadow: 5px 8px 0 rgba(255, 255, 255, 0.5); }
+      body .main-container .header i {
+        font-size: 50px; }
+    body .main-container .content-container .register-component {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center; }
+    body .main-container .footer-container .players p {
+      font-family: 'Press Start 2P', cursive; }
+
+/*# sourceMappingURL=main.css.map */
