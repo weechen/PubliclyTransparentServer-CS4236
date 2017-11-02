@@ -1,6 +1,7 @@
 const express = require('express');
 const socketio = require('socket.io');
 const _ = require('lodash');
+const crypto = require('crypto');
 
 const PORT = process.env.PORT || 3000
 
@@ -56,6 +57,10 @@ io.on('connection', (socket) => {
     playersJoined++;
 
     console.log(players);
+
+    let salt = crypto.randomBytes(256);
+    salt = salt.toString('base64');
+    console.log(salt);
     
     if(playersJoined >= MAX_NUM_PLAYERS) {
       io.sockets.emit('startGame', {players}); //emit 'startGame' event to everyone connected to the server socket
