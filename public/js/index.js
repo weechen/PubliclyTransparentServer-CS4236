@@ -21,7 +21,7 @@ $(function () {
 
         /******** DOM OBJECTS ********/
         var $header = $('.header');
-        var $audios = $('#audios');
+        var $audios = $('.audios');
 
         //Buttons
         var $beginButton = $('.begin-btn');
@@ -31,10 +31,12 @@ $(function () {
         //Components / Sections
         var $registerComponent = $('.register-component');
         var $betComponent = $('.bet-component');
+        var $playersTable = $('.players-table');
+        var $playersList = $('.players-list');
 
         //Input DOMs
         var $input_username = $('#username-input');
-        var $bet = $('#bet-input');
+        var $input_bet = $('#bet-input');
 
         //Error DOMs
         var $all_errors = $('.error-message');
@@ -62,8 +64,12 @@ $(function () {
         ***** EVENTS HANDLERS (SOCKET.IO EVENTS) *******
         ************************************************/
         var initEventListners = function() {
-        	_socket.on('startGame', function (data) {
+        	_socket.on('startGame', function (data) { //data = {players: {players object}} object
+        		createPlayersTable(data.players)
+        		$playersTable.removeClass('hidden');
+				
 				clearWarnings();
+				
 				initBetComponent();
 			    //socket.emit('my other event', { my: 'data' });
 			});
@@ -81,6 +87,10 @@ $(function () {
         	$registerButton.mouseenter(function() {
         		$audios[0].play();
         	});
+
+        	$betButton.mouseenter(function() {
+        		$audios[0].play();
+        	});
         }
 
         var attachClickHandlers = function() {
@@ -92,6 +102,11 @@ $(function () {
         	$registerButton.on('click', function() {
         		processRegistration();
         	})
+
+        	$betButton.on('click', function() {
+        		placeBet();
+        	})
+
         }
 
 		/***********************************************
@@ -115,7 +130,30 @@ $(function () {
         }
 
         var initBetComponent = function() {
+        	$betComponent.removeClass('hidden');
+        }
 
+        var createPlayersTable = function(players) {
+        	tableInfo = "";
+
+        	for (var playerId in players) {
+			    if (players.hasOwnProperty(playerId)) {
+			        tableInfo +=  "<p class='player-entry margin-right-m'>"+players[playerId].username+"</p>";
+			    }
+			}
+
+			$playersList.append(tableInfo);
+        }
+
+        var placeBet = function() {
+        	var placedBet = $input_bet.val();
+
+        	if(!placedBet) {
+        		showError(ERROR_TYPES["ERROR_TYPE_3"]);
+        		return;
+        	}
+
+        	$audios[1].play();
         }
 
         var showError = function(ERROR_TYPE_VAL) {
@@ -125,6 +163,9 @@ $(function () {
         			break;
         		case ERROR_TYPES["ERROR_TYPE_2"]:
         			$exist_username.removeClass('hidden');
+        			break;
+    			case ERROR_TYPES["ERROR_TYPE_3"]:
+    				$empty_bet.removeClass('hidden');
         			break;
         		default:
         			break;

@@ -11,27 +11,54 @@ const server = app.listen(PORT, function () {
 });
 
 /*** FINAL ***/
-let MAX_NUM_PLAYERS = 5;
+let MAX_NUM_PLAYERS = 2;
 
-let game = 123;	// rand int, changed when game ends
+/*** CONTROLLED ***/
+let game = 123;	// rand int, changed when game ends (i.e.:Random game session everytime)
 let balance = 0;
 let transactions = {};
 let playersJoined = 0;
+
+let _id = 0;
+/**
+NOTE: transactions and playerProfile is different. playerProfile is created/updated only at the START(when the user register) and at the END(when the game ends)
+*/
+//Props of playerProfile
+let playerProfile = {
+  id:null, //int
+  username: '',
+  score: null, //int
+  socketId:null //int
+}
+
+/**
+players = {
+  id1: {playerProfile},
+  id2: {playerProfile},
+  ...
+}
+*/
+let players = {};
 
 const io = socketio.listen(server);
 io.on('connection', (socket) => {
   console.log(`${socket.id} connected`);
 
-  // socket.emit('register', { username: alice });
+  // socket.emit('register', { username : 'alice'} });
   socket.on('register', ({ username }) => {
   	console.log(`${socket.id} has been registered as ${username}`);
     socket.join(game);
     transactions[socket.id] = {};
     transactions[socket.id].username = username
+
+    players[_id] = createNewPlayerProfile(_id, username, 0, socket.id);
+    _id++;
     playersJoined++;
 
-    if(playersJoined == MAX_NUM_PLAYERS) {
-      socket.emit('startGame', {});
+    console.log(players);
+    
+    if(playersJoined >= MAX_NUM_PLAYERS) {
+      io.sockets.emit('startGame', {players}); //emit 'startGame' event to everyone connected to the server socket
     }
   });
 
@@ -98,7 +125,6 @@ function revealSecret(){
 	resetGame();
 }
 
-
 function resetGame() {
 	transactions = {};
 	let oldGame = game;
@@ -110,6 +136,32 @@ function resetGame() {
 
 function sha3(val) {
 	return val;	// dummy
+}
+
+function createNewPlayerProfile(playerId, username, score, socketId) {
+  toReturn = null;
+
+  if(!playerExists(playerId)) {
+    playerProfile = {}
+    
+    playerProfile.id = playerId;
+    playerProfile.username = username;
+    playerProfile.score = score;
+    playerProfile.socketId = socketId;
+
+    toReturn = playerProfile;
+  }
+
+  return toReturn;
+}
+
+function playerExists(playerId) {
+  return playerId.toString() in players;
+}
+
+//Returns the player if exists, else return {}
+function getPlayerProfile(playerId) {
+  return players[playerId];
 }
 
 app.use(express.static(__dirname + '/public'));
