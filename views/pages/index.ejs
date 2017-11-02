@@ -6,6 +6,7 @@
   	<link rel="stylesheet" type="text/css" href="stylesheets/standardized-spacing.css">
   	<link href="https://afeld.github.io/emoji-css/emoji.css" rel="stylesheet">
   	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+  	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
   	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
   	<script src="/socket.io/socket.io.js"></script>
@@ -13,8 +14,12 @@
 
   <body>
   	<div class="main-container">
-	  	<audio controls id="audios" preload="auto" class="hidden">
+	  	<audio controls preload="auto" class="audios hidden">
 			<source src="music/smw_coin.mp3" controls></source>
+		</audio>
+
+		<audio controls preload="auto" class="audios hidden">
+			<source src="music/cash_register.mp3" controls></source>
 		</audio>
 
   		<div class="header col-xs-12"><!--optional effect class: blink-animation-->
@@ -33,9 +38,9 @@
   				<p id="username-exist-error" class="error-message animated flash hidden">Username already exist.</p>
   			</div>
 
-  			<div class="bet-component">
-  				<input id="bet-input" type="number" placeholder="bet" class="margin-bottom-m"/>
-  				<button class="place-bet-btn">PLACE BET</button>
+  			<div class="bet-component hidden">
+  				<input id="bet-input" type="number" placeholder="bet" class="margin-bottom-s"/>
+  				<button class="place-bet-btn"><i class="em em-moneybag"></i></button>
   				<p id="empty-bet-error" class="error-message animated flash hidden">Bet Required.</p>
   			</div>
 
@@ -43,8 +48,9 @@
   		</div>
 
   		<div class="footer-container">
-  			<div class="players hidden">
+  			<div class="players-table hidden">
   				<p>You are playing with:</p>
+  				<div class="players-list"></div>
   			</div>
   		</div>
   	</div>
