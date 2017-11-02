@@ -5,6 +5,7 @@
   	<link rel="stylesheet" type="text/css" href="stylesheets/main.css">
   	<link rel="stylesheet" type="text/css" href="stylesheets/standardized-spacing.css">
   	<link href="https://afeld.github.io/emoji-css/emoji.css" rel="stylesheet">
+  	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
 
   	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
   	<script src="/socket.io/socket.io.js"></script>
@@ -16,7 +17,7 @@
 			<source src="music/smw_coin.mp3" controls></source>
 		</audio>
 
-  		<div class="header blink-animation col-xs-12">
+  		<div class="header col-xs-12"><!--optional effect class: blink-animation-->
   		 	<i class="em em-slot_machine margin-top-s"></i>
   			<h2 class="margin-left-m margin-right-m">BET ONLY !</h2>
   			<i class="em em-slot_machine margin-top-s"></i>
@@ -26,9 +27,19 @@
   			<button class="begin-btn">BEGIN</button>
 
 			<div class="register-component hidden">
-  				<input id="username-input" type="text" class="margin-bottom-m"/>
+  				<input id="username-input" type="text" placeholder="username" class="margin-bottom-m"/>
   				<button class="register-btn">REGISTER</button>
+  				<p id="empty-username-error" class="error-message animated flash hidden">Username Required.</p>
+  				<p id="username-exist-error" class="error-message animated flash hidden">Username already exist.</p>
   			</div>
+
+  			<div class="bet-component">
+  				<input id="bet-input" type="number" placeholder="bet" class="margin-bottom-m"/>
+  				<button class="place-bet-btn">PLACE BET</button>
+  				<p id="empty-bet-error" class="error-message animated flash hidden">Bet Required.</p>
+  			</div>
+
+  			<p id="wait-others-warning" class="warning-message animated infinite flash animated-delay-2 hidden">Waiting for other players...</p>
   		</div>
 
   		<div class="footer-container">

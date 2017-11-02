@@ -38,6 +38,10 @@
 	display:none !important;
 }
 
+.animated-delay-2 {
+	-webkit-animation-duration: 2s !important;
+}
+
 html {
 	height: 100%;
 }
@@ -81,6 +85,18 @@ body {
 		    outline: none;
 		}
 
+		p.error-message {
+			font-family: 'Press Start 2P', cursive;
+			font-size: 15px;
+			color: #e74c3c;
+		}
+
+		p.warning-message {
+			font-family: 'Press Start 2P', cursive;
+			font-size: 15px;
+			color: #f39c12;
+		}
+
 		.header {
 			display: flex;
 		    flex-direction: row;
@@ -100,11 +116,26 @@ body {
 		}
 
 		.content-container {
+			height: 30%;
+		    display: flex;
+		    flex-direction: column;
+		    align-items: center;
+		    justify-content: center;
+
 			.register-component {
+				height: 100%;
 				display: flex;
 				flex-direction: column;
 				align-items: center;
-				justify-content: center;
+				justify-content: flex-start;
+			}
+
+			.bet-component {
+				height: 100%;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: flex-start;
 			}
 
 		}

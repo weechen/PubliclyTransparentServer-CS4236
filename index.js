@@ -10,9 +10,13 @@ const server = app.listen(PORT, function () {
   console.log('Listening on port 3000')
 });
 
+/*** FINAL ***/
+let MAX_NUM_PLAYERS = 5;
+
 let game = 123;	// rand int, changed when game ends
 let balance = 0;
 let transactions = {};
+let playersJoined = 0;
 
 const io = socketio.listen(server);
 io.on('connection', (socket) => {
@@ -24,6 +28,11 @@ io.on('connection', (socket) => {
     socket.join(game);
     transactions[socket.id] = {};
     transactions[socket.id].username = username
+    playersJoined++;
+
+    if(playersJoined == MAX_NUM_PLAYERS) {
+      socket.emit('startGame', {});
+    }
   });
 
   // socket.emit('bet', { bet: 10 });
