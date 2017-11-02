@@ -117,18 +117,20 @@ body {
 
 		.content-container {
 			width: 100%;
-			height: 30%;
+			height: 50%;
 		    display: flex;
 		    flex-direction: column;
 		    align-items: center;
 		    justify-content: center;
 
 			.register-component {
+				width: 100%;
 				height: 100%;
 				display: flex;
 				flex-direction: column;
 				align-items: center;
 				justify-content: flex-start;
+				padding-top: 100px;
 			}
 
 			.bet-component {
@@ -138,6 +140,7 @@ body {
 				flex-direction: column;
 				align-items: center;
 				justify-content: flex-start;
+				padding-top: 100px;
 
 				.place-bet-btn {
 					border-radius: 100px;
@@ -151,6 +154,18 @@ body {
 
 				#empty-bet-error {
 					margin-bottom: 0;
+				}
+
+				.bet-time-left-component {
+					width: 100%;
+
+					display: flex;
+					flex-direction: row;
+					align-items: center;
+					justify-content: center;
+
+					font-family: 'Press Start 2P', cursive;
+					color: #f39c12;
 				}
 			}
 
@@ -171,13 +186,26 @@ body {
 					color: #27ae60;
 				}
 
-				.players-list {
+				.players-row {
 					display: flex;
 					flex-direction: row;
-					justify-content: flex-start;
+					align-items: center;
 
-					p.player-entry {
-						color: #3498db;
+					p {
+						color: white;
+					}
+
+					.players-list {
+						display: flex;
+						flex-direction: row;
+						justify-content: flex-start;
+
+						div.player-entry {
+							text-align: center;
+							p {
+								color: #3498db;
+							}
+						}
 					}
 				}
 			}

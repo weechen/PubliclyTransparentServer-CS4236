@@ -33,10 +33,14 @@ $(function () {
         var $betComponent = $('.bet-component');
         var $playersTable = $('.players-table');
         var $playersList = $('.players-list');
+        var $betTimeLeftComponent = $('.bet-time-left-component');
 
         //Input DOMs
         var $input_username = $('#username-input');
         var $input_bet = $('#bet-input');
+
+        //countdown DOMS
+        var $betTimeLeft = $('#betTimeLeft');
 
         //Error DOMs
         var $all_errors = $('.error-message');
@@ -47,6 +51,9 @@ $(function () {
         //Warning DOMs
         var $all_warnings = $('.warning-message');
         var $waiting_others = $('#wait-others-warning');
+
+        //Update Display DOMs
+        var $betTimeLeft = $('#betTimeLeft');
 
 
         /***********************************************
@@ -76,6 +83,7 @@ $(function () {
 
 			_socket.on('betTimeUpdate', function(data){ //data = {countdown: time value} object
 				console.log(data.countdown);
+				updateCountDownTimerDisplay(data.countdown);
 			});
         }
 
@@ -135,18 +143,24 @@ $(function () {
 
         var initBetComponent = function() {
         	$betComponent.removeClass('hidden');
+
+        	$betTimeLeftComponent.removeClass('hidden');
         }
 
         var createPlayersTable = function(players) {
-        	tableInfo = "";
+        	playersInfo = "";
 
         	for (var playerId in players) {
 			    if (players.hasOwnProperty(playerId)) {
-			        tableInfo +=  "<p class='player-entry margin-right-m'>"+players[playerId].username+"</p>";
+			        playersInfo +=  
+			        "<div class='player-entry margin-right-m'>"+
+			        	"<p>"+players[playerId].username+"</p>"+
+			        	"<p>"+players[playerId].score+"</p>"+
+			        "</div>";
 			    }
 			}
 
-			$playersList.append(tableInfo);
+			$playersList.append(playersInfo);
         }
 
         var placeBet = function() {
@@ -158,6 +172,10 @@ $(function () {
         	}
 
         	$audios[1].play();
+        }
+
+        var updateCountDownTimerDisplay = function(timeLeft) {
+        	$betTimeLeft.html(timeLeft);
         }
 
         var showError = function(ERROR_TYPE_VAL) {
