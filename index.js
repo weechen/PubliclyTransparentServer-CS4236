@@ -59,6 +59,7 @@ io.on('connection', (socket) => {
     
     if(playersJoined >= MAX_NUM_PLAYERS) {
       io.sockets.emit('startGame', {players}); //emit 'startGame' event to everyone connected to the server socket
+      startGame();
     }
   });
 
@@ -125,6 +126,10 @@ function revealSecret(){
 	resetGame();
 }
 
+function startGame() {
+  StartBetTimer();
+}
+
 function resetGame() {
 	transactions = {};
 	let oldGame = game;
@@ -132,6 +137,15 @@ function resetGame() {
 	while (game === oldGame) {
 		game = _.random(5000);
 	}
+}
+
+function StartBetTimer() {
+  var betTimeLeft = 30;
+
+  setInterval(function() {  
+    betTimeLeft--;
+    io.sockets.emit('betTimeUpdate', { countdown: betTimeLeft });
+  }, 1000); //every sec, update the bettime
 }
 
 function sha3(val) {

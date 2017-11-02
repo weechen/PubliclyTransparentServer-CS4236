@@ -73,6 +73,10 @@ $(function () {
 				initBetComponent();
 			    //socket.emit('my other event', { my: 'data' });
 			});
+
+			_socket.on('betTimeUpdate', function(data){ //data = {countdown: time value} object
+				console.log(data.countdown);
+			});
         }
 
 
