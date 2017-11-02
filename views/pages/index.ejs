@@ -39,9 +39,13 @@
   			</div>
 
   			<div class="bet-component hidden">
-  				<input id="bet-input" type="number" placeholder="bet" class="margin-bottom-s"/>
+  				<input id="bet-input" type="number" placeholder="bet" class="margin-bottom-m"/>
   				<button class="place-bet-btn"><i class="em em-moneybag"></i></button>
   				<p id="empty-bet-error" class="error-message animated flash hidden">Bet Required.</p>
+
+  				<div class="bet-time-left-component margin-top-m hidden">
+  					<h2>Time Left: <span id="betTimeLeft"></span> sec</h2>
+  				</div>
   			</div>
 
   			<p id="wait-others-warning" class="warning-message animated infinite flash animated-delay-2 hidden">Waiting for other players...</p>
@@ -50,7 +54,11 @@
   		<div class="footer-container">
   			<div class="players-table hidden">
   				<p>You are playing with:</p>
-  				<div class="players-list"></div>
+
+  				<div class="players-row">
+  					<p class="margin-right-s">Players:</p>
+	  				<div class="players-list"></div>
+	  			</div>
   			</div>
   		</div>
   	</div>
