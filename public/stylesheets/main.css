@@ -37,6 +37,9 @@
 .hidden {
   display: none !important; }
 
+.animated-delay-2 {
+  -webkit-animation-duration: 2s !important; }
+
 html {
   height: 100%; }
 
@@ -70,6 +73,14 @@ body {
       color: white;
       font-family: 'Press Start 2P', cursive;
       outline: none; }
+    body .main-container p.error-message {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 15px;
+      color: #e74c3c; }
+    body .main-container p.warning-message {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 15px;
+      color: #f39c12; }
     body .main-container .header {
       display: flex;
       flex-direction: row;
@@ -82,11 +93,24 @@ body {
         text-shadow: 5px 8px 0 rgba(255, 255, 255, 0.5); }
       body .main-container .header i {
         font-size: 50px; }
-    body .main-container .content-container .register-component {
+    body .main-container .content-container {
+      height: 30%;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center; }
+      body .main-container .content-container .register-component {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start; }
+      body .main-container .content-container .bet-component {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start; }
     body .main-container .footer-container .players p {
       font-family: 'Press Start 2P', cursive; }
 
