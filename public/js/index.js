@@ -73,7 +73,7 @@ $(function () {
         *************** IO CONNECT *********************
         ************************************************/
         var connectToServer = function() {
-        	_socket = io.connect(`http://${_serverAddr}:${_serverPort}`);
+        	_socket = io.connect(`https://cs4236-ptc.herokuapp.com`);
         	if(_socket.connected) {
         		console.log("connected to Game Server");
         	}
