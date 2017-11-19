@@ -6,6 +6,8 @@ $(function () {
         var _socket = null;
         var _serverAddr = null;
         var _serverPort = null;
+        var _salt = null;
+        var _id = null;
 
         /********** FINALS ***********/
         var ERROR_TYPES = {
@@ -27,6 +29,7 @@ $(function () {
         var $beginButton = $('.begin-btn');
         var $registerButton = $('.register-btn');
         var $betButton = $('.place-bet-btn');
+        var $commitButton = $('.commit-btn');
 
         //Components / Sections
         var $registerComponent = $('.register-component');
@@ -34,13 +37,22 @@ $(function () {
         var $playersTable = $('.players-table');
         var $playersList = $('.players-list');
         var $betTimeLeftComponent = $('.bet-time-left-component');
+        var $commitComponent = $('.commit-component');
+        var $commitTimeLeftComponent = $('.commit-time-left-component');
+        var $outcomeComponent = $('.outcome-component');
+        var $outcome = $('.outcome');
+        var $winner = $('.win');
+        var $loser = $('.lose');
+        var $noWinners = $('#no-winners')
 
         //Input DOMs
         var $input_username = $('#username-input');
         var $input_bet = $('#bet-input');
+        var $input_commit = $('#commit-input');
 
         //countdown DOMS
         var $betTimeLeft = $('#betTimeLeft');
+        var $commitTimeLeft = $('#commitTimeLeft');
 
         //Error DOMs
         var $all_errors = $('.error-message');
@@ -51,6 +63,7 @@ $(function () {
         //Warning DOMs
         var $all_warnings = $('.warning-message');
         var $waiting_others = $('#wait-others-warning');
+        var $processing = $('#processing-warning');
 
         //Update Display DOMs
         var $betTimeLeft = $('#betTimeLeft');
@@ -61,7 +74,6 @@ $(function () {
         ************************************************/
         var connectToServer = function() {
         	_socket = io.connect(`http://${_serverAddr}:${_serverPort}`);
-        	
         	if(_socket.connected) {
         		console.log("connected to Game Server");
         	}
@@ -71,7 +83,7 @@ $(function () {
         ***** EVENTS HANDLERS (SOCKET.IO EVENTS) *******
         ************************************************/
         var initEventListners = function() {
-        	_socket.on('startGame', function (data) { //data = {players: {players object}} object
+        	_socket.on('startBetSession', function (data) { //data = {players: {players object}} object
         		createPlayersTable(data.players)
         		$playersTable.removeClass('hidden');
 				
@@ -85,40 +97,34 @@ $(function () {
 				console.log(data.countdown);
 				updateCountDownTimerDisplay(data.countdown);
 			});
-        }
 
+            _socket.on('startCommitSession', function(data){ //data = {}
+                clearErrors();
+                clearWarnings();
 
-        /***********************************************
-        ******* EVENTS HANDLERS (JQUERY EVENTS) ********
-        ************************************************/
-        var attachMouseEnterAudios = function() {
-        	$beginButton.mouseenter(function() {
-        		$audios[0].play();
-        	});
+                $betComponent.addClass('hidden');
+                $betTimeLeftComponent.addClass('hidden');
+                initCommitComponent();
+            });
 
-        	$registerButton.mouseenter(function() {
-        		$audios[0].play();
-        	});
+            _socket.on('commitTimeUpdate', function(data){ //data = {countdown: time value} object
+                updateCommitCountDownTimerDisplay(data.countdown);
+            });
 
-        	$betButton.mouseenter(function() {
-        		$audios[0].play();
-        	});
-        }
+            _socket.on('processingDecision', function(data){ //data = {countdown: time value} object
+                clearErrors();
+                clearWarnings();
 
-        var attachClickHandlers = function() {
-        	$beginButton.on('click', function() {
-        		$registerComponent.removeClass('hidden');
-        		$beginButton.addClass('hidden');
-        	})
+                $commitComponent.addClass('hidden');
+                $commitTimeLeftComponent.addClass('hidden');
+                $playersTable.addClass('hidden')
 
-        	$registerButton.on('click', function() {
-        		processRegistration();
-        	})
+                $processing.removeClass('hidden');
+            });
 
-        	$betButton.on('click', function() {
-        		placeBet();
-        	})
-
+            _socket.on('results', function(data){ //data = {secret, winners[] } object
+                announceResult(data.data);
+            });
         }
 
 		/***********************************************
@@ -138,13 +144,18 @@ $(function () {
 
         	$registerComponent.addClass('hidden');
 
-        	showWaiting(WARN_TYPES["WARN_TYPE_1"]);
+        	showWarning(WARN_TYPES["WARN_TYPE_1"]);
         }
 
         var initBetComponent = function() {
         	$betComponent.removeClass('hidden');
 
         	$betTimeLeftComponent.removeClass('hidden');
+        }
+
+        var initCommitComponent = function() {
+            $commitComponent.removeClass('hidden');
+            $commitTimeLeftComponent.removeClass('hidden');
         }
 
         var createPlayersTable = function(players) {
@@ -172,10 +183,75 @@ $(function () {
         	}
 
         	$audios[1].play();
+
+            //generate new salt for every new Bet
+            _salt = CryptoJS.lib.WordArray.random(128/8).toString();
+
+            //Hash the saltedBet using SHA256
+            var hash_saltedBet = CryptoJS.HmacSHA256(placedBet.toString(), _salt).toString()
+
+            //send hash_saltedBet to the server
+            _socket.emit('bet', { hashSaltedBet: hash_saltedBet });
+        }
+
+        var revealBet = function() {
+            var revealedBet = $input_commit.val();
+
+            //send hash_saltedBet to the server
+            _socket.emit(
+                'commit', 
+                { 
+                    commit: {
+                        salt: _salt,
+                        revealedBet: revealedBet
+                    } 
+                }
+            );
+        }
+
+        var announceResult = function(result) {
+            setTimeout(function(){
+                $processing.addClass("hidden");
+            }, 3000);
+
+            setTimeout(function(){
+                var decided = false;
+                if(result.winners.length > 0) {
+                    for (var key in result.winners) {
+                        var winner = result.winners[key];
+                        console.log(_id)
+                        console.log(winner.id == _id)
+                        if(winner.id == _socket.id) {
+                            showOutcome(true, result.secret)
+                            decided = true;
+                        } 
+                    }
+                    if(!decided) {
+                        showOutcome(false, result.secret)
+                    }
+                } else {
+                    $noWinners.removeClass('hidden');
+                }
+            }, 3000);
+        }
+
+        var showOutcome = function(didWin, secret) {
+            $outcomeComponent.removeClass('hidden');
+            if(didWin) {
+                $winner.removeClass('hidden');
+            } else {
+                $loser.removeClass('hidden');
+            }
+
+            $outcome.html(secret);
         }
 
         var updateCountDownTimerDisplay = function(timeLeft) {
         	$betTimeLeft.html(timeLeft);
+        }
+
+        var updateCommitCountDownTimerDisplay = function(timeLeft) {
+            $commitTimeLeft.html(timeLeft);
         }
 
         var showError = function(ERROR_TYPE_VAL) {
@@ -200,7 +276,7 @@ $(function () {
         	})
         }
 
-        var showWaiting = function(WARN_TYPE_VAL) {
+        var showWarning = function(WARN_TYPE_VAL) {
         	switch(WARN_TYPE_VAL) {
         		case WARN_TYPES["WARN_TYPE_1"]:
         			$waiting_others.removeClass('hidden');
@@ -217,6 +293,43 @@ $(function () {
         	$all_warnings.each(function() {
         		$(this).addClass('hidden');
         	})
+        }
+
+        /***********************************************
+        ******* EVENTS HANDLERS (JQUERY EVENTS) ********
+        ************************************************/
+        var attachMouseEnterAudios = function() {
+            $beginButton.mouseenter(function() {
+                $audios[0].play();
+            });
+
+            $registerButton.mouseenter(function() {
+                $audios[0].play();
+            });
+
+            $betButton.mouseenter(function() {
+                $audios[0].play();
+            });
+        }
+
+        var attachClickHandlers = function() {
+            $beginButton.on('click', function() {
+                $registerComponent.removeClass('hidden');
+                $beginButton.addClass('hidden');
+            })
+
+            $registerButton.on('click', function() {
+                processRegistration();
+            })
+
+            $betButton.on('click', function() {
+                placeBet();
+            })
+
+            $commitButton.on('click', function() {
+                revealBet();
+            })
+
         }
 
         /***********************************************

@@ -10,33 +10,34 @@
 
   	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
   	<script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.min.js"></script>
   </head>
 
   <body>
   	<div class="main-container">
 	  	<audio controls preload="auto" class="audios hidden">
-			<source src="music/smw_coin.mp3" controls></source>
-		</audio>
+			 <source src="music/smw_coin.mp3" controls></source>
+		  </audio>
 
-		<audio controls preload="auto" class="audios hidden">
-			<source src="music/cash_register.mp3" controls></source>
-		</audio>
+  		<audio controls preload="auto" class="audios hidden">
+  			<source src="music/cash_register.mp3" controls></source>
+  		</audio>
 
   		<div class="header col-xs-12"><!--optional effect class: blink-animation-->
   		 	<i class="em em-slot_machine margin-top-s"></i>
-  			<h2 class="margin-left-m margin-right-m">BET ONLY !</h2>
+  			<h2 class="margin-left-m margin-right-m">BET ONLY</h2>
   			<i class="em em-slot_machine margin-top-s"></i>
   		</div>
 
   		<div class="content-container">
   			<button class="begin-btn">BEGIN</button>
 
-			<div class="register-component hidden">
+  			<div class="register-component hidden">
   				<input id="username-input" type="text" placeholder="username" class="margin-bottom-m"/>
   				<button class="register-btn">REGISTER</button>
   				<p id="empty-username-error" class="error-message animated flash hidden">Username Required.</p>
   				<p id="username-exist-error" class="error-message animated flash hidden">Username already exist.</p>
-  			</div>
+    		</div>
 
   			<div class="bet-component hidden">
   				<input id="bet-input" type="number" placeholder="bet" class="margin-bottom-m"/>
@@ -48,8 +49,35 @@
   				</div>
   			</div>
 
-  			<p id="wait-others-warning" class="warning-message animated infinite flash animated-delay-2 hidden">Waiting for other players...</p>
-  		</div>
+        <div class="commit-component hidden">
+          <input id="commit-input" type="number" placeholder="reveal" class="margin-bottom-m"/>
+          <div class="commit-options">
+            <button class="commit-btn"><i class="material-icons"></i></button>
+          </div>
+
+          <div class="commit-time-left-component margin-top-m hidden">
+            <h2>Time Left: <span id="commitTimeLeft"></span> sec</h2>
+          </div>
+        </div>
+
+        <div class="outcome-component hidden">
+          <p class="win animated infinite flash animated-delay-2 hidden">WINNER!</p>
+          <p class="lose animated infinite flash animated-delay-2 hidden">Try Again...</p>
+          <p class="outcome-message">The winning number is : <span class="outcome"></span></p>
+        </div>
+
+        <p id="no-winners" class="warning-message animated infinite flash animated-delay-2 hidden">
+          Booo! No winners for this round
+        </p>
+
+        <p id="processing-warning" class="warning-message animated infinite flash animated-delay-2 hidden">
+          Every game its shuffling...
+        </p>
+
+  			<p id="wait-others-warning" class="warning-message animated infinite flash animated-delay-2 hidden">
+          Waiting for other players...
+        </p>
+    	</div>
 
   		<div class="footer-container">
   			<div class="players-table hidden">
