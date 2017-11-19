@@ -19,8 +19,8 @@ let game = 123;	// rand int, changed when game ends (i.e.:Random game session ev
 let balance = 0;
 let transactions = {};
 let playersJoined = 0;
-let betTimeLeft = 10; //sec
-let commitTimeLeft = 10; //sec
+let betTimeLeft = 30; //sec
+let commitTimeLeft = 30; //sec
 
 /**
 NOTE: transactions and playerProfile are different. playerProfile is created/updated only at the START(when the user register) and at the END(when the game ends)
