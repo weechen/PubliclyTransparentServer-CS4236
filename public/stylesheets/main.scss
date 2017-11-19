@@ -95,6 +95,11 @@ body {
 			font-family: 'Press Start 2P', cursive;
 			font-size: 15px;
 			color: #f39c12;
+
+			&#no-winners {
+				color: #c0392b;
+				font-size: 25px;
+			}
 		}
 
 		.header {
@@ -144,11 +149,18 @@ body {
 
 				.place-bet-btn {
 					border-radius: 100px;
-				    padding: 14px;
+				    padding: 0 !important;
 				    border-width: 4px;
 
+				    display: flex;
+				    flex-direction: column;
+				    justify-content: center;
+				    min-height: 80px;
+				    min-width: 80px;
+				    align-items: center;
+
 				    i {
-				    	font-size: 35px;
+				    	font-size: 29px;
 				    }
 				}
 
@@ -166,6 +178,93 @@ body {
 
 					font-family: 'Press Start 2P', cursive;
 					color: #f39c12;
+				}
+			}
+
+			.commit-component {
+				width: 100%;
+				height: 100%;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: flex-start;
+				padding-top: 100px;
+
+				.commit-options {
+					display: flex;
+				    flex-direction: row;
+				    justify-content: space-evenly;
+				    align-items: center;
+
+				    button {
+				    	border-radius: 100px;
+					    padding: 0 !important;
+					    border-width: 4px;
+
+					    display: flex;
+					    flex-direction: column;
+					    justify-content: center;
+					    min-height: 80px;
+					    min-width: 80px;
+					    align-items: center;
+
+				    	&.commit-btn {
+				    		i {
+				    			font-size: 35px;
+				    		}
+
+				    		i::before {
+				    			content:'lock_open';
+				    		}
+
+				    		&:hover {
+					    		i {
+					    			color: #2980b9;
+					    		}
+
+					    		i::before {
+					    			content: 'lock_outline';
+					    		}
+					    	}
+				    	}
+				    }
+				}
+
+				.commit-time-left-component {
+					width: 100%;
+
+					display: flex;
+					flex-direction: row;
+					align-items: center;
+					justify-content: center;
+
+					font-family: 'Press Start 2P', cursive;
+					color: #f39c12;
+				}
+			}
+
+			.outcome-component {
+				display: flex;
+			    flex-direction: column;
+			    justify-content: center;
+			    align-items: center;
+
+				p.outcome-message {
+					font-family: 'Press Start 2P', cursive;
+					color: #f39c12;
+				}
+
+				p.win {
+					font-family: 'Press Start 2P', cursive;
+					color: #27ae60;
+    				font-size: 40px;
+
+				}
+
+				p.lose {
+					font-family: 'Press Start 2P', cursive;
+					color: #e74c3c;
+    				font-size: 30px;
 				}
 			}
 

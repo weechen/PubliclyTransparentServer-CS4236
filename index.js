@@ -1,6 +1,7 @@
 const express = require('express');
 const socketio = require('socket.io');
 const _ = require('lodash');
+const crypto = require('crypto');
 
 const PORT = process.env.PORT || 3000
 
@@ -18,10 +19,11 @@ let game = 123;	// rand int, changed when game ends (i.e.:Random game session ev
 let balance = 0;
 let transactions = {};
 let playersJoined = 0;
+let betTimeLeft = 10; //sec
+let commitTimeLeft = 10; //sec
 
-let _id = 0;
 /**
-NOTE: transactions and playerProfile is different. playerProfile is created/updated only at the START(when the user register) and at the END(when the game ends)
+NOTE: transactions and playerProfile are different. playerProfile is created/updated only at the START(when the user register) and at the END(when the game ends)
 */
 //Props of playerProfile
 let playerProfile = {
@@ -31,13 +33,6 @@ let playerProfile = {
   socketId:null //int
 }
 
-/**
-players = {
-  id1: {playerProfile},
-  id2: {playerProfile},
-  ...
-}
-*/
 let players = {};
 
 const io = socketio.listen(server);
@@ -51,86 +46,135 @@ io.on('connection', (socket) => {
     transactions[socket.id] = {};
     transactions[socket.id].username = username
 
-    players[_id] = createNewPlayerProfile(_id, username, 0, socket.id);
-    _id++;
+    players[socket.id] = createNewPlayerProfile(socket.id, username, 0, socket.id);
+
     playersJoined++;
 
     console.log(players);
     
     if(playersJoined >= MAX_NUM_PLAYERS) {
-      io.sockets.emit('startGame', {players}); //emit 'startGame' event to everyone connected to the server socket
       startGame();
     }
   });
 
-  // socket.emit('bet', { bet: 10 });
-  socket.on('bet', ({ bet }) => {
-    if (bet && _.isSafeInteger(bet) && bet > 0) {
-      console.log(`${transactions[socket.id].username} has placed bet of ${bet}`);
-      balance += bet;
+  // socket.emit('bet', { hashSaltedBet: sha256(bet+salt) });
+  socket.on('bet', ({ hashSaltedBet }) => {
+    if (hashSaltedBet) {
+      console.log(`${transactions[socket.id].username} has placed bet of ${hashSaltedBet}`);
+      //balance += bet; //NOT SURE WHATS THIS FOR
+      transactions[socket.id].bet = hashSaltedBet
     }
   });
 
-  // socket.emit('commit', { commit: 10 });
+  // socket.emit('commit', { commit:{revealedBet, salt} });
   socket.on('commit', ({ commit }) => {
   	if (!transactions[socket.id]) {
   		return console.warn(`${socket.id} does not exist in transactions`);
   	}
-  	console.log(`${transactions[socket.id].username} has submitted commit ${commit}`);
-  	// check that commit is valid data type
-  	transactions[socket.id].commit = commit;
+  	console.log(`${transactions[socket.id].username} has revealed ${commit.revealedBet}`);
+  	
+    // assign commit values
+  	transactions[socket.id].revealedBet = parseInt(commit.revealedBet, 10);
+    transactions[socket.id].salt = commit.salt;
+
+    if(transactions[socket.id].revealedBet != '') {
+      hash = crypto.createHmac('sha256', transactions[socket.id].salt)
+                   .update( (transactions[socket.id].revealedBet).toString() )
+                   .digest('hex');
+
+      transactions[socket.id].revealedHash = hash;
+    } else {
+      transactions[socket.id].revealedHash = null
+    }
   });
 
-  // socket.emit('guess', { guess: 10 });
-  socket.on('guess', ({ guess }) => {
-		if (!transactions[socket.id]) {
-  		return console.warn(`${socket.id} does not exist in transactions`);
-  	}
-  	console.log(`${transactions[socket.id].username} has submitted guess ${guess}`);
-  	// check that guess is valid data type
-  	transactions[socket.id].guess = guess;
-  	revealSecret();
+  socket.on('getPlayers', ({}) => {
+    io.sockets.emit('playersInfo', {players});
   });
+
+  socket.on('restart', ({ isRejoining }) => {
+    if(isRejoining) {
+      socket.join(game);
+
+      transactions[socket.id] = {}; //create a new transaction for that socket
+      transactions[socket.id].username = players[socket.id].username
+
+      /*
+      Existing playerProfile ---> players{} never get cleared
+      playerProfile = {
+        id:<exist>,
+        username: <exist>,
+        score: <exist>, //int
+        socketId: <exist> //int
+      }
+      */
+      playersJoined++;
+
+      console.log(players);
+    } else {
+      delete players[socket.id];
+      console.log(players);
+    }
+    
+    if(playersJoined >= MAX_NUM_PLAYERS) {
+      startGame();
+    }
+  });
+
+  // // socket.emit('guess', { guess: 10 });
+  // socket.on('guess', ({ guess }) => {
+		// if (!transactions[socket.id]) {
+  // 		return console.warn(`${socket.id} does not exist in transactions`);
+  // 	}
+  // 	console.log(`${transactions[socket.id].username} has submitted guess ${guess}`);
+  // 	// check that guess is valid data type
+  // 	transactions[socket.id].guess = guess;
+  // 	revealSecret();
+  // });
 });
 
 // to be called on timeout
 function revealSecret(){
+  //announce first
+  io.sockets.emit('processingDecision', {});
+
   let validTransactions = [];
   let transactionsSize = _.keys(transactions).length;
 	let secret = 0;
 	_.forEach(transactions, (transaction, id) => {
-		let { guess, commit } = transaction;
-		if (typeof (guess) !== 'undefined') {
-      secret += transaction.guess % transactionsSize;
-      if (sha3(transaction.guess) === sha3(transaction.commit)) {
-      	transaction.playerId = id;
-        validTransactions.push(transaction);
-			}
+		let { bet, revealedBet, revealedHash } = transaction;
+    if(revealedBet != null) {
+      secret += revealedBet % transactionsSize;
+    }
+
+    if (revealedHash != null && revealedHash === bet) {
+    	transaction.playerId = id; //playerId == socket id
+      validTransactions.push(transaction);
 		}
 	});
 
 	let winners = [];
 	_.forEach(validTransactions, (transaction) => {
-		if (_.isEqual(transaction.guess, secret)) {
-			winners.push(transaction.playerId);
+    let { revealedBet } = transaction;
+		if (_.isEqual(revealedBet, secret)) {
+      players[transaction.playerId].score++; //raise the score
+			winners.push({id:transaction.playerId , username: transaction.username}); //push the winner name
 		}
 	});
 
-	if (_.isEmpty(winners)) {
-  	io.in(game).emit('results', { message: `No winners for this round, secret was ${secret}` });
-	}
-	else {
-  	io.in(game).emit('results', { message: `Winners are ${winners}, secret was ${secret}` });
-	}
-	// delete room
-	resetGame();
+  io.in(game).emit('results', { data: {secret: secret, winners: winners} });
+
+  resetGame();
 }
 
 function startGame() {
-  StartBetTimer();
+  io.sockets.emit('startBetSession', {players}); //emit 'startGame' event to everyone connected to the server socket
+  startBetTimer();
 }
 
 function resetGame() {
+  playersJoined = 0;
+
 	transactions = {};
 	let oldGame = game;
 	game = _.random(5000);
@@ -139,17 +183,31 @@ function resetGame() {
 	}
 }
 
-function StartBetTimer() {
-  var betTimeLeft = 30;
-
-  setInterval(function() {  
+function startBetTimer() {
+  var intervalRunner = setInterval(function() {  
     betTimeLeft--;
+    if(betTimeLeft <= 0) {
+      clearInterval(intervalRunner);
+      startCommitSession();
+    }
     io.sockets.emit('betTimeUpdate', { countdown: betTimeLeft });
   }, 1000); //every sec, update the bettime
 }
 
-function sha3(val) {
-	return val;	// dummy
+function startCommitSession() {
+  io.sockets.emit('startCommitSession', {});
+  startCommitTimer();
+}
+
+function startCommitTimer() {
+  var intervalRunner = setInterval(function() {  
+    commitTimeLeft--;
+    if(commitTimeLeft <= 0) {
+      clearInterval(intervalRunner);
+      revealSecret();
+    }
+    io.sockets.emit('commitTimeUpdate', { countdown: commitTimeLeft });
+  }, 1000); //every sec, update the bettime
 }
 
 function createNewPlayerProfile(playerId, username, score, socketId) {

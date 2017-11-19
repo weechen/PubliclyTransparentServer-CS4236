@@ -81,6 +81,9 @@ body {
       font-family: 'Press Start 2P', cursive;
       font-size: 15px;
       color: #f39c12; }
+      body .main-container p.warning-message#no-winners {
+        color: #c0392b;
+        font-size: 25px; }
     body .main-container .header {
       display: flex;
       flex-direction: row;
@@ -118,10 +121,16 @@ body {
         padding-top: 100px; }
         body .main-container .content-container .bet-component .place-bet-btn {
           border-radius: 100px;
-          padding: 14px;
-          border-width: 4px; }
+          padding: 0 !important;
+          border-width: 4px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          min-height: 80px;
+          min-width: 80px;
+          align-items: center; }
           body .main-container .content-container .bet-component .place-bet-btn i {
-            font-size: 35px; }
+            font-size: 29px; }
         body .main-container .content-container .bet-component #empty-bet-error {
           margin-bottom: 0; }
         body .main-container .content-container .bet-component .bet-time-left-component {
@@ -132,6 +141,61 @@ body {
           justify-content: center;
           font-family: 'Press Start 2P', cursive;
           color: #f39c12; }
+      body .main-container .content-container .commit-component {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding-top: 100px; }
+        body .main-container .content-container .commit-component .commit-options {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-evenly;
+          align-items: center; }
+          body .main-container .content-container .commit-component .commit-options button {
+            border-radius: 100px;
+            padding: 0 !important;
+            border-width: 4px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 80px;
+            min-width: 80px;
+            align-items: center; }
+            body .main-container .content-container .commit-component .commit-options button.commit-btn i {
+              font-size: 35px; }
+            body .main-container .content-container .commit-component .commit-options button.commit-btn i::before {
+              content: 'lock_open'; }
+            body .main-container .content-container .commit-component .commit-options button.commit-btn:hover i {
+              color: #2980b9; }
+            body .main-container .content-container .commit-component .commit-options button.commit-btn:hover i::before {
+              content: 'lock_outline'; }
+        body .main-container .content-container .commit-component .commit-time-left-component {
+          width: 100%;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: center;
+          font-family: 'Press Start 2P', cursive;
+          color: #f39c12; }
+      body .main-container .content-container .outcome-component {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center; }
+        body .main-container .content-container .outcome-component p.outcome-message {
+          font-family: 'Press Start 2P', cursive;
+          color: #f39c12; }
+        body .main-container .content-container .outcome-component p.win {
+          font-family: 'Press Start 2P', cursive;
+          color: #27ae60;
+          font-size: 40px; }
+        body .main-container .content-container .outcome-component p.lose {
+          font-family: 'Press Start 2P', cursive;
+          color: #e74c3c;
+          font-size: 30px; }
     body .main-container .footer-container {
       width: 100%;
       height: 20%;
